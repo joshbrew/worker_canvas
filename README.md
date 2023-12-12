@@ -14,6 +14,15 @@ npm install workercanvas
 yarn add workercanvas
 ```
 
+## Run Example
+```bash
+cd example
+
+npm i
+
+npm start
+```
+
 ## Elevate your applications with seamless off-screen rendering!
 
 This library harnesses the power of Web Workers to take your canvas-based rendering off the main thread 🧵. Experience buttery smooth animations, complex visual computations, and responsive user interfaces—all while keeping your application's main thread free for other critical tasks 🖼️💡.
