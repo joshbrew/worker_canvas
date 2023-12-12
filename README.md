@@ -18,6 +18,9 @@ yarn add workercanvas
 ```bash
 cd example
 
+# if tinybuild is not installed
+npm i -g tinybuild
+
 npm i
 
 npm start
