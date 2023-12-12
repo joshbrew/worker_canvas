@@ -53,17 +53,18 @@ const workerRenderer = Renderer({
       context.fillRect(0,0,canvas.width,canvas.height);
   }                        
 });
-
-
-
 ```
-Start creating fluid animations and graphics right away!
 
+![1](./example/result1.PNG)
+
+Start creating fluid animations and graphics right away!
 
 There is a prebundled worker when you use 'true' or you can follow the canvas.worker.ts example to ensure functionality and provide a worker url instead. If you want to invoke threejs etc on the thread you need to define your own worker and have an alternative route to initialize what you need. 
 
+## Types
 
-Also includes full type support, for worker and nonworker canvases, though you should really only care about this for multithreading ease of use.
+This speeds up learning the library in your editor (e.g. VSCode)
+
 ```ts
 type WorkerCanvasTransferProps = { //defined in main thread to send to worker
     canvas:HTMLCanvasElement,  
@@ -126,6 +127,8 @@ type WorkerCanvas = { //this is the object stored on the worker to track this ca
 ```
 
 ## Sample worker that reroutes for ThreeJS initialization
+
+![2](./example/result2.PNG)
 
 ```ts
 
