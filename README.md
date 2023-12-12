@@ -1,5 +1,6 @@
 # Web Worker Canvas Library 🚀
 
+
 ![d-status](https://img.shields.io/npm/v/workercanvas.svg) 
 ![d-downloads](https://img.shields.io/npm/dt/workercanvas.svg)
 
@@ -17,6 +18,7 @@ yarn add workercanvas
 
 This library harnesses the power of Web Workers to take your canvas-based rendering off the main thread 🧵. Experience buttery smooth animations, complex visual computations, and responsive user interfaces—all while keeping your application's main thread free for other critical tasks 🖼️💡.
 
+This is a pure implementation with type support, and adds about 32kb of total weight to your program when using the bundle.
 ---
 
 ## Usage 🛠️
