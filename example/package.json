@@ -22,8 +22,9 @@
   ],
   "author": "",
   "license": "",
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "three": "^0.159.0"
+  },
   "nodemonConfig": {
     "env": {
       "NODEMON": true
