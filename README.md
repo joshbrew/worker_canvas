@@ -15,6 +15,8 @@ yarn add workercanvas
 ```
 
 ## Run Example
+
+### [Demo Link](https://workercanvas.netlify.app/)
 ```bash
 cd example
 
