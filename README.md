@@ -1,5 +1,8 @@
 # Web Worker Canvas Library 🚀
 
+![d-status](https://img.shields.io/npm/v/workercanvas.svg) 
+![d-downloads](https://img.shields.io/npm/dt/workercanvas.svg)
+
 ## Elevate your applications with seamless off-screen rendering!
 
 This library harnesses the power of Web Workers to take your canvas-based rendering off the main thread 🧵. Experience buttery smooth animations, complex visual computations, and responsive user interfaces—all while keeping your application's main thread free for other critical tasks 🖼️💡.
