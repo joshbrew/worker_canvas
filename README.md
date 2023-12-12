@@ -129,7 +129,7 @@ type WorkerCanvas = { //this is the object stored on the worker to track this ca
 
 ```ts
 
-import { workerCanvasRoutes, CanvasProps } from './WorkerCanvas';
+import { workerCanvasRoutes, CanvasProps } from '../WorkerCanvas';
 
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
@@ -184,24 +184,25 @@ if(typeof WorkerGlobalScope !== 'undefined') {
 
 export default self as any;
 
+
 ```
 
 Then from main thread we'd call
 
 ```ts
-import { Renderer, WorkerCanvas } from 'workercanvas';
 
-const canvas = document.createElement('canvas'); 
-canvas.width = 800; canvas.height = 600;
-canvas.id = 'myCanvas';
-document.body.appendChild('canvas');
+import threewrkr from './three.worker' //or use a bundled path (not ts)
+
+const canvas2 = document.createElement('canvas'); 
+canvas2.width = 800; canvas2.height = 600;
+canvas2.id = 'myCanvas2';
+document.body.appendChild(canvas2);
 const myOffscreenCanvas = Renderer(
     {
-        canvas: canvas,
-        context:'2d',
-        worker: true, //use our prebundled worker
-        //route:"customInitFunction", //set a custom function to pass our Renderer creation logic to, e.g. to create a stage for setting up ThreeJS on the worker
-        _id:canvas.id,
+        canvas: canvas2,
+        worker: threewrkr, //use our prebundled worker
+        route:"receiveThreeCanvas", //set a custom function to pass our Renderer creation logic to, e.g. to create a stage for setting up ThreeJS on the worker
+        _id:canvas2.id,
         context:undefined, //Threejs sets the context
         init:(self:WorkerCanvas,canvas,context)=>{
 
@@ -361,8 +362,7 @@ const myOffscreenCanvas = Renderer(
                 self.scene = null;
             }
         }
-    },
-    'receiveThreeCanvas'                    
+    }                
 );
 ```
 
