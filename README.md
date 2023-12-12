@@ -25,6 +25,7 @@ This is a pure implementation with type support, and adds about 32kb of total we
 
 Import the necessary components from the library and let the magic happen:
 
+### index.js
 ```ts
 import { Renderer, WorkerCanvas } from '../WorkerCanvas';
 
@@ -130,6 +131,8 @@ type WorkerCanvas = { //this is the object stored on the worker to track this ca
 
 ![2](./example/result2.PNG)
 
+
+### three.worker.ts
 ```ts
 
 import { workerCanvasRoutes, CanvasProps } from '../WorkerCanvas';
@@ -192,8 +195,10 @@ export default self as any;
 
 Then from main thread we'd call
 
-```ts
 
+### index.js
+```ts
+import { Renderer, WorkerCanvas } from '../WorkerCanvas';
 import threewrkr from './three.worker' //or use a bundled path (not ts)
 
 const canvas2 = document.createElement('canvas'); 
