@@ -4,28 +4,28 @@ declare var WorkerGlobalScope;
 
 /////////////https://threejsfundamentals.org/threejs/lessons/threejs-offscreencanvas.html
 const mouseEventHandler = makeSendPropertiesHandler([
-    'ctrlKey',
-    'metaKey',
-    'altKey',
-    'shiftKey',
-    'button',
-    'which',
-    'pointerType',
-    'clientX',
-    'clientY',
-    'pageX',
-    'pageY',
-    'movementX',
-    'movementY',
-    'x',
-    'y',
-    'which',
-    'timeStamp'
-  ]);
+  'ctrlKey',
+  'metaKey',
+  'altKey',
+  'shiftKey',
+  'button',
+  'which',
+  'pointerType',
+  'clientX',
+  'clientY',
+  'pageX',
+  'pageY',
+  'movementX',
+  'movementY',
+  'x',
+  'y',
+  'which',
+  'timeStamp'
+]);
 
 const wheelEventHandlerImpl = makeSendPropertiesHandler([
   'deltaX',
-  'deltaY',
+  'deltaY'
 ]);
 
 const keydownEventHandler = makeSendPropertiesHandler([
@@ -103,7 +103,6 @@ while(i < 222) { //proxy all key events
   i++;
 }
 
-
 function filteredKeydownEventHandler(event, sendFn, preventDefault) {
   let {keyCode} = event;
   if (keys[keyCode]) {
@@ -133,7 +132,7 @@ export const eventHandlers = { //you can register more event handlers in this ob
   keyup: filteredKeydownEventHandler
 };
 
-  //do this on main thread
+//do this on main thread
 export function initProxyElement(element, worker, id, preventDefault?:boolean) {
 
     if( !id ) id = 'proxy'+Math.floor(Math.random()*1000000000000000);
@@ -144,7 +143,7 @@ export function initProxyElement(element, worker, id, preventDefault?:boolean) {
       } else worker.postMessage({route:'handleProxyEvent',args:[data,id]}); //for use with our service syntax
     };
 
-    // register an id
+    //Register an id
     //worker.postMessage({route:'makeProxy', args:id})
 
     let entries = Object.entries(eventHandlers);
@@ -158,29 +157,28 @@ export function initProxyElement(element, worker, id, preventDefault?:boolean) {
     if(eventHandlers.keydown) {
       globalThis.addEventListener('keydown', function(ev) {
         eventHandlers.keydown(ev, sendEvent, preventDefault);
-      })
+      });
     }
 
     if(eventHandlers.keyup) {
       globalThis.addEventListener('keyup', function(ev) {
         eventHandlers.keyup(ev, sendEvent, preventDefault);
-      })
+      });
     }
 
-    // if(eventHandlers.focus) {
+    //if(eventHandlers.focus) {
     //   globalThis.addEventListener('focus', function(ev) {
     //     eventHandlers.focus(ev, sendEvent);
-    //   })
-    // }
+    //   });
+    //}
 
-    // if(eventHandlers.blur) {
-    //   globalThis.addEventListener('blur', function(ev) {
-    //     eventHandlers.blur(ev, sendEvent);
-    //   })
-    // }
+    //if(eventHandlers.blur) {
+    //  globalThis.addEventListener('blur', function(ev) {
+    //      eventHandlers.blur(ev, sendEvent);
+    //  });
+    //}
 
     const sendSize = () => {
-      
         const rect = element.getBoundingClientRect();
         sendEvent({
           type: 'resize',
@@ -201,12 +199,10 @@ export function initProxyElement(element, worker, id, preventDefault?:boolean) {
 
 
 //From Worker Thread
-
 /////////////https://threejsfundamentals.org/threejs/lessons/threejs-offscreencanvas.html
 export class EventDispatcher {
 
   __listeners:any;
-
 
 	addEventListener( type, listener ) {
     //console.log(type,listener);

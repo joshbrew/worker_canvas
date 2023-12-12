@@ -195,7 +195,6 @@ export default self as any;
 
 Then from main thread we'd call
 
-
 ### index.js
 ```ts
 import { Renderer, WorkerCanvas } from '../WorkerCanvas';
