@@ -55,7 +55,13 @@ const motionHandler = makeSendPropertiesHandler([
   'accelerationIncludingGravity',
   'rotationRate',
   'interval'
-])
+]);
+
+const screenOrientationHandler = (event, sendFn, preventDefault) => {
+  if(preventDefault && event.preventDefault) event.preventDefault();
+  const data = { type:'orientation', target:{type:event.target.type, angle:event.target.angle} };
+  sendFn(data);
+}
 
 
 function copyProperties(src, properties, dst) {
@@ -149,7 +155,8 @@ export const eventHandlers = { //you can register more event handlers in this ob
   keydown: filteredKeydownEventHandler,
   keyup: filteredKeydownEventHandler,
   deviceorientation:orientationHandler,
-  devicemotion:motionHandler
+  devicemotion:motionHandler,
+  orientation:screenOrientationHandler
 };
 
 //do this on main thread
@@ -195,6 +202,12 @@ export function initProxyElement(element, worker, id, preventDefault?:boolean) {
     if(eventHandlers.deviceorientation) {
       globalThis.addEventListener('deviceorientation', function(ev) {
         eventHandlers.keyup(ev, sendEvent, preventDefault);
+      });
+    }
+
+    if(eventHandlers.orientation) {
+      screen.orientation.addEventListener("change", (ev) => {
+        eventHandlers.orientation(ev, sendEvent, preventDefault);
       });
     }
 

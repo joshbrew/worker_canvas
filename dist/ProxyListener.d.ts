@@ -24,6 +24,7 @@ export declare const eventHandlers: {
     keyup: typeof filteredKeydownEventHandler;
     deviceorientation: (event: any, sendFn: any) => void;
     devicemotion: (event: any, sendFn: any) => void;
+    orientation: (event: any, sendFn: any, preventDefault: any) => void;
 };
 export declare function initProxyElement(element: any, worker: any, id: any, preventDefault?: boolean): any;
 export declare class EventDispatcher {
