@@ -1,6 +1,6 @@
+declare function preventDefaultHandler(event: any, sendFn: any, preventDefault: any): void;
 declare function focusEventHandler(event: any, sendFn: any): void;
 declare function wheelEventHandler(event: any, sendFn: any, preventDefault: any): void;
-declare function preventDefaultHandler(event: any, sendFn: any, preventDefault: any): void;
 declare function touchEventHandler(event: any, sendFn: any, preventDefault: any): void;
 declare function filteredKeydownEventHandler(event: any, sendFn: any, preventDefault: any): void;
 export declare const eventHandlers: {
@@ -22,6 +22,8 @@ export declare const eventHandlers: {
     wheel: typeof wheelEventHandler;
     keydown: typeof filteredKeydownEventHandler;
     keyup: typeof filteredKeydownEventHandler;
+    deviceorientation: (event: any, sendFn: any) => void;
+    devicemotion: (event: any, sendFn: any) => void;
 };
 export declare function initProxyElement(element: any, worker: any, id: any, preventDefault?: boolean): any;
 export declare class EventDispatcher {

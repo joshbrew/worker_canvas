@@ -41,6 +41,41 @@ const keydownEventHandler = makeSendPropertiesHandler([
   'timeStamp'
 ]);
 
+const orientationHandler = makeSendPropertiesHandler([
+  'alpha',
+  'beta',
+  'gamma',
+  'absolute',
+  'webkitCompassHeading',
+  'webkitCompassAccuracy'
+]);
+
+const motionHandler = makeSendPropertiesHandler([
+  'acceleration',
+  'accelerationIncludingGravity',
+  'rotationRate',
+  'interval'
+])
+
+
+function copyProperties(src, properties, dst) {
+  for (const name of properties) {
+      dst[name] = src[name];
+  }
+}
+
+function makeSendPropertiesHandler(properties) {
+  return function sendProperties(event, sendFn) {
+    const data = {type: event.type};
+    copyProperties(event, properties, data);
+    sendFn(data);
+  };
+}
+
+function preventDefaultHandler(event, sendFn, preventDefault) {
+  if(preventDefault && event.preventDefault) event.preventDefault();
+}
+
 function focusEventHandler(event, sendFn) {
   const data = { type:event.type } as any;
   data.isTrusted = event.isTrusted;
@@ -64,23 +99,6 @@ function wheelEventHandler(event, sendFn, preventDefault) {
   wheelEventHandlerImpl(event, sendFn);
 }
 
-function preventDefaultHandler(event, sendFn, preventDefault) {
-  if(preventDefault && event.preventDefault) event.preventDefault();
-}
-
-function copyProperties(src, properties, dst) {
-  for (const name of properties) {
-      dst[name] = src[name];
-  }
-}
-
-function makeSendPropertiesHandler(properties) {
-  return function sendProperties(event, sendFn) {
-    const data = {type: event.type};
-    copyProperties(event, properties, data);
-    sendFn(data);
-  };
-}
 
 function touchEventHandler(event, sendFn, preventDefault) {
   if(preventDefault && event.preventDefault) event.preventDefault();
@@ -129,7 +147,9 @@ export const eventHandlers = { //you can register more event handlers in this ob
   touchend: touchEventHandler,
   wheel: wheelEventHandler,
   keydown: filteredKeydownEventHandler,
-  keyup: filteredKeydownEventHandler
+  keyup: filteredKeydownEventHandler,
+  deviceorientation:orientationHandler,
+  devicemotion:motionHandler
 };
 
 //do this on main thread
@@ -162,6 +182,18 @@ export function initProxyElement(element, worker, id, preventDefault?:boolean) {
 
     if(eventHandlers.keyup) {
       globalThis.addEventListener('keyup', function(ev) {
+        eventHandlers.keyup(ev, sendEvent, preventDefault);
+      });
+    }
+
+    if(eventHandlers.devicemotion) {
+      globalThis.addEventListener('devicemotion', function(ev) {
+        eventHandlers.keyup(ev, sendEvent, preventDefault);
+      });
+    }
+
+    if(eventHandlers.deviceorientation) {
+      globalThis.addEventListener('deviceorientation', function(ev) {
         eventHandlers.keyup(ev, sendEvent, preventDefault);
       });
     }
