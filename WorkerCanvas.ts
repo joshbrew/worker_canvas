@@ -101,7 +101,7 @@ export function transferCanvas(
     if(!options) return undefined;
     if(!options._id) options._id = `canvas${Math.floor(Math.random()*1000000000000000)}`;
 
-    let offscreen = (options.canvas as any).transferControlToOffscreen();
+    let offscreen = options.canvas instanceof OffscreenCanvas ? options.canvas : (options.canvas as any).transferControlToOffscreen();
     if(!options.width) options.width = options.canvas.clientWidth;
     if(!options.height) options.height = options.canvas.clientHeight;
 
