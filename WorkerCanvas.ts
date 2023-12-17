@@ -110,8 +110,9 @@ export function transferCanvas(
         canvas:offscreen, 
     }};
 
-    if(this?.__node?.graph) this.__node.graph.run('initProxyElement', options.canvas, worker, options._id, options.preventDefault); //initiate an element proxy
-    else initProxyElement(options.canvas,worker,options._id, options.preventDefault);
+    let proxy;
+    if(this?.__node?.graph) proxy = this.__node.graph.run('initProxyElement', options.canvas, worker, options._id, options.preventDefault); //initiate an element proxy
+    else proxy = initProxyElement(options.canvas,worker,options._id, options.preventDefault);
 
     if(options.draw) {
         if(typeof options.draw === 'function') message.args.draw = options.draw.toString()
@@ -169,6 +170,7 @@ export function transferCanvas(
             worker.postMessage({route:'setDraw',args:[newDrawProps,options._id]},transfer);
         },
         terminate:()=>{
+            if(proxy) proxy.terminate();
             (worker as Worker).terminate();
         }
     }
@@ -195,10 +197,13 @@ export function setDraw(
         if(settings.canvas) {
             canvasopts.canvas = settings.canvas;
 
+            if(canvasopts.proxy) canvasopts.proxy.terminate();
+            let proxy;
             //create an element proxy to add event listener functionality
-            if(this?.__node?.graph) this.__node.graph.run('makeProxy', canvasopts._id, canvasopts.canvas);
-            else proxyElementWorkerRoutes.makeProxy(canvasopts._id, canvasopts.canvas);
+            if(this?.__node?.graph) proxy = this.__node.graph.run('makeProxy', canvasopts._id, canvasopts.canvas);
+            else proxy = proxyElementWorkerRoutes.makeProxy(canvasopts._id, canvasopts.canvas);
 
+            canvasopts.proxy = proxy;
             //now the canvas can handle mouse and resize events, more can be implemented
         }
         if(typeof settings.context === 'string') canvasopts.context = canvasopts.canvas.getContext(settings.context);
@@ -242,6 +247,7 @@ export function setupCanvas(
     typeof options.context === 'string' ? canvasOptions.context = options.canvas.getContext(options.context) : canvasOptions.context = options.context; //get the rendering context based on string passed
     ('animating' in options) ? canvasOptions.animating = options.animating : canvasOptions.animating = true;
 
+    let proxy;
     if(this?.__node?.graph?.CANVASES[canvasOptions._id]) {
         this.__node.graph.run('setDraw',canvasOptions);
     } else if(globalThis.CANVASES?.[canvasOptions._id]) {
@@ -262,8 +268,8 @@ export function setupCanvas(
         else globalThis.CANVASES[canvasOptions._id] = canvasOptions;
 
         //create an element proxy to add event listener functionality
-        if(this?.__node?.graph) this.__node.graph.run('makeProxy', canvasOptions._id, canvasOptions.canvas);
-        else proxyElementWorkerRoutes.makeProxy(canvasOptions._id, canvasOptions.canvas);
+        if(this?.__node?.graph) proxy = this.__node.graph.run('makeProxy', canvasOptions._id, canvasOptions.canvas);
+        else proxy = proxyElementWorkerRoutes.makeProxy(canvasOptions._id, canvasOptions.canvas);
         //now the canvas can handle mouse and resize events, more can be implemented
   
         if(options.width) canvasOptions.canvas.width = options.width;
@@ -320,6 +326,7 @@ export function setupCanvas(
             _id:options._id,
             width:options.width,
             height:options.height,
+            proxy,
             draw:(props?:any)=>{
                 drawFrame(props,options._id);
             },
@@ -343,6 +350,9 @@ export function setupCanvas(
                 setDraw(newDrawProps,options._id);
             },
             terminate:()=>{
+                if(canvascontrols.proxy) {
+                    canvascontrols.proxy.terminate();
+                }
                 if(this.__node?.graph) this.__node.graph.remove(options._id);
                 else {
                     stopAnim(options._id); 

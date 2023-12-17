@@ -71,7 +71,8 @@ function copyProperties(src, properties, dst) {
 }
 
 function makeSendPropertiesHandler(properties) {
-  return function sendProperties(event, sendFn) {
+  return function sendProperties(event, sendFn, preventDefault?) {  
+    if(preventDefault && event.preventDefault) event.preventDefault();
     const data = {type: event.type};
     copyProperties(event, properties, data);
     sendFn(data);
@@ -159,6 +160,7 @@ export const eventHandlers = { //you can register more event handlers in this ob
   orientation:screenOrientationHandler
 };
 
+
 //do this on main thread
 export function initProxyElement(element, worker, id, preventDefault?:boolean) {
 
@@ -174,41 +176,49 @@ export function initProxyElement(element, worker, id, preventDefault?:boolean) {
     //worker.postMessage({route:'makeProxy', args:id})
 
     let entries = Object.entries(eventHandlers);
-    
+
+    let functions = {} as any;
+
     for (const [eventName, handler] of entries) {
-      element.addEventListener(eventName, function(event) { //add all of the event listeners we care about
+      functions[eventName] = function(event) { //add all of the event listeners we care about
         handler(event, sendEvent, preventDefault);
-      });
+      }
+      element.addEventListener(eventName, functions[eventName]);
     }
 
     if(eventHandlers.keydown) {
-      globalThis.addEventListener('keydown', function(ev) {
-        eventHandlers.keydown(ev, sendEvent, preventDefault);
-      });
+      functions['keydown'] = function(event) {
+        eventHandlers.keydown(event, sendEvent, preventDefault);
+      }
+      globalThis.addEventListener('keydown', functions['keydown']);
     }
 
     if(eventHandlers.keyup) {
-      globalThis.addEventListener('keyup', function(ev) {
-        eventHandlers.keyup(ev, sendEvent, preventDefault);
-      });
+      functions['keyup'] = function(event) {
+        eventHandlers.keyup(event, sendEvent, preventDefault);
+      }
+      globalThis.addEventListener('keyup', functions['keyup']);
     }
 
     if(eventHandlers.devicemotion) {
-      globalThis.addEventListener('devicemotion', function(ev) {
-        eventHandlers.keyup(ev, sendEvent, preventDefault);
-      });
+      functions['devicemotion'] = function(event) {
+        eventHandlers.devicemotion(event, sendEvent, preventDefault);
+      }
+      globalThis.addEventListener('devicemotion', functions['devicemotion']);
     }
 
     if(eventHandlers.deviceorientation) {
-      globalThis.addEventListener('deviceorientation', function(ev) {
-        eventHandlers.keyup(ev, sendEvent, preventDefault);
-      });
+      functions['deviceorientation'] = function(event) {
+        eventHandlers.deviceorientation(event, sendEvent, preventDefault);
+      }
+      globalThis.addEventListener('deviceorientation', functions['deviceorientation']);
     }
 
     if(eventHandlers.orientation) {
-      screen.orientation.addEventListener("change", (ev) => {
-        eventHandlers.orientation(ev, sendEvent, preventDefault);
-      });
+      functions['orientation'] = (event) => {
+        eventHandlers.orientation(event, sendEvent, preventDefault);
+      }
+      screen.orientation.addEventListener("change", functions['orientation']);
     }
 
     //if(eventHandlers.focus) {
@@ -238,7 +248,19 @@ export function initProxyElement(element, worker, id, preventDefault?:boolean) {
     // really need to use ResizeObserver
     globalThis.addEventListener('resize', sendSize);
   
-    return id;
+    return {
+      functions,
+      terminate:()=>{for(const key in functions) {
+        if(key === 'keyup' || key === 'keydown' || key === 'devicemotion' || key === 'deviceorientation') {
+          globalThis.removeEventListener(key,functions[key]);
+        } else if (key === 'orientation') {
+          screen.orientation.removeEventListener("change", functions[key]);
+        } else {
+          element.removeEventListener(key, functions[key]);
+        }
+      }},
+      id
+    };
 
 }
 

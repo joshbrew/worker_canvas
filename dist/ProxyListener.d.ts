@@ -5,28 +5,32 @@ declare function touchEventHandler(event: any, sendFn: any, preventDefault: any)
 declare function filteredKeydownEventHandler(event: any, sendFn: any, preventDefault: any): void;
 export declare const eventHandlers: {
     contextmenu: typeof preventDefaultHandler;
-    mousedown: (event: any, sendFn: any) => void;
-    mousemove: (event: any, sendFn: any) => void;
-    mouseup: (event: any, sendFn: any) => void;
-    pointerdown: (event: any, sendFn: any) => void;
-    pointermove: (event: any, sendFn: any) => void;
-    pointerup: (event: any, sendFn: any) => void;
-    pointerlockchange: (event: any, sendFn: any) => void;
-    webkitpointerlockchange: (event: any, sendFn: any) => void;
+    mousedown: (event: any, sendFn: any, preventDefault?: any) => void;
+    mousemove: (event: any, sendFn: any, preventDefault?: any) => void;
+    mouseup: (event: any, sendFn: any, preventDefault?: any) => void;
+    pointerdown: (event: any, sendFn: any, preventDefault?: any) => void;
+    pointermove: (event: any, sendFn: any, preventDefault?: any) => void;
+    pointerup: (event: any, sendFn: any, preventDefault?: any) => void;
+    pointerlockchange: (event: any, sendFn: any, preventDefault?: any) => void;
+    webkitpointerlockchange: (event: any, sendFn: any, preventDefault?: any) => void;
     focus: typeof focusEventHandler;
     blur: typeof focusEventHandler;
-    pointerout: (event: any, sendFn: any) => void;
+    pointerout: (event: any, sendFn: any, preventDefault?: any) => void;
     touchstart: typeof touchEventHandler;
     touchmove: typeof touchEventHandler;
     touchend: typeof touchEventHandler;
     wheel: typeof wheelEventHandler;
     keydown: typeof filteredKeydownEventHandler;
     keyup: typeof filteredKeydownEventHandler;
-    deviceorientation: (event: any, sendFn: any) => void;
-    devicemotion: (event: any, sendFn: any) => void;
+    deviceorientation: (event: any, sendFn: any, preventDefault?: any) => void;
+    devicemotion: (event: any, sendFn: any, preventDefault?: any) => void;
     orientation: (event: any, sendFn: any, preventDefault: any) => void;
 };
-export declare function initProxyElement(element: any, worker: any, id: any, preventDefault?: boolean): any;
+export declare function initProxyElement(element: any, worker: any, id: any, preventDefault?: boolean): {
+    functions: any;
+    terminate: () => void;
+    id: any;
+};
 export declare class EventDispatcher {
     __listeners: any;
     addEventListener(type: any, listener: any): void;
