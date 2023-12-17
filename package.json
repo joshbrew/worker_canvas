@@ -1,6 +1,6 @@
 {
   "name": "workercanvas",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "Convenient multithreaded canvas rendering tools.",
   "main": "./dist/index.js",
   "module": "./dist/index.esm.js",

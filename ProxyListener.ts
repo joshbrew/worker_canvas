@@ -50,12 +50,21 @@ const orientationHandler = makeSendPropertiesHandler([
   'webkitCompassAccuracy'
 ]);
 
-const motionHandler = makeSendPropertiesHandler([
-  'acceleration',
-  'accelerationIncludingGravity',
-  'rotationRate',
-  'interval'
-]);
+const motionHandler = (event:DeviceMotionEvent, sendFn, preventDefault) => {
+  if(preventDefault && event.preventDefault) event.preventDefault();
+  const data = { 
+    type:'devicemotion', 
+    acceleration:{x:event.acceleration.x,y:event.acceleration.y,z:event.acceleration.y},
+    accelerationIncludingGravity:{x:event.accelerationIncludingGravity.x,y:event.accelerationIncludingGravity.y,z:event.accelerationIncludingGravity.y},
+    rotationRate:{
+      alpha:event.rotationRate.alpha,
+      beta:event.rotationRate.beta,
+      gamma:event.rotationRate.gamma
+    },
+    interval:event.interval
+  };
+  sendFn(data);
+}
 
 const screenOrientationHandler = (event, sendFn, preventDefault) => {
   if(preventDefault && event.preventDefault) event.preventDefault();

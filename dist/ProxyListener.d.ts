@@ -23,7 +23,7 @@ export declare const eventHandlers: {
     keydown: typeof filteredKeydownEventHandler;
     keyup: typeof filteredKeydownEventHandler;
     deviceorientation: (event: any, sendFn: any, preventDefault?: any) => void;
-    devicemotion: (event: any, sendFn: any, preventDefault?: any) => void;
+    devicemotion: (event: DeviceMotionEvent, sendFn: any, preventDefault: any) => void;
     orientation: (event: any, sendFn: any, preventDefault: any) => void;
 };
 export declare function initProxyElement(element: any, worker: any, id: any, preventDefault?: boolean): {
