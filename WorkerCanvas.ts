@@ -296,73 +296,92 @@ export function setupCanvas(
             canvasOptions.clear = canvasOptions.clear.bind(canvasOptions);
         } 
 
-        if(typeof canvasOptions.init === 'function') 
-                (canvasOptions.init as any)(canvasOptions, canvasOptions.canvas,canvasOptions.context);
-
-        canvasOptions.stop = () => {stopAnim(canvasOptions._id);};
-        canvasOptions.start = (draw?:any) => {startAnim(canvasOptions._id,draw);};
-        canvasOptions.set = (settings:any) => {setDraw(settings,canvasOptions._id);}
-
-        if(typeof canvasOptions.draw === 'function' && canvasOptions.animating) {
-            let draw = (s,canvas,context) => {            
-                if(s.animating) {
-                    s.draw(s,canvas,context);
-                    requestAnimationFrame(()=>{ 
-                        draw(s,canvas,context);  
-                    });
-                }
-            }
-            
-            draw(canvasOptions, canvasOptions.canvas,canvasOptions.context);
         
-        }
-    }
+        const finishSetup = () => {
+            canvasOptions.stop = () => {stopAnim(canvasOptions._id);};
+            canvasOptions.start = (draw?:any) => {startAnim(canvasOptions._id,draw);};
+            canvasOptions.set = (settings:any) => {setDraw(settings,canvasOptions._id);}
 
-    if(typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope)
-        return canvasOptions._id as string;
-    else {
-        //lets add some utilities to make it easy to update the thread
-        const canvascontrols = {
-            _id:options._id,
-            width:options.width,
-            height:options.height,
-            proxy,
-            draw:(props?:any)=>{
-                drawFrame(props,options._id);
-            },
-            update:(props:{[key:string]:any})=>{
-                updateCanvas(props,options._id);
-            },
-            clear:()=>{
-                clearCanvas(options._id);
-            },
-            init:()=>{
-                //console.log('Posting init')
-                initCanvas(options._id);
-            },
-            stop:()=>{
-                stopAnim(options._id);
-            },
-            start:()=>{
-                startAnim(options._id);
-            },
-            set:(newDrawProps:CanvasProps)=>{
-                setDraw(newDrawProps,options._id);
-            },
-            terminate:()=>{
-                if(canvascontrols.proxy) {
-                    canvascontrols.proxy.terminate();
+            if(typeof canvasOptions.draw === 'function' && canvasOptions.animating) {
+                let draw = (s,canvas,context) => {            
+                    if(s.animating) {
+                        let res = s.draw(s,canvas,context);
+                        if(res?.then) {
+                            res.then(() => {
+                                requestAnimationFrame(()=>{ 
+                                    draw(s,canvas,context);  
+                                });
+                            })
+                        }
+                        else requestAnimationFrame(()=>{ 
+                            draw(s,canvas,context);  
+                        });
+                    }
                 }
-                if(this.__node?.graph) this.__node.graph.remove(options._id);
-                else {
-                    stopAnim(options._id); 
-                    if(this?.__node?.graph) delete this.__node.graph.CANVASES[canvasOptions._id];
-                    else delete globalThis.CANVASES[canvasOptions._id];
+                
+                draw(canvasOptions, canvasOptions.canvas,canvasOptions.context);
+            
+            }
+
+            if(typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope)
+                return canvasOptions._id as string;
+            else {
+                //lets add some utilities to make it easy to update the thread
+                const canvascontrols = {
+                    _id:options._id,
+                    width:options.width,
+                    height:options.height,
+                    proxy,
+                    draw:(props?:any)=>{
+                        drawFrame(props,options._id);
+                    },
+                    update:(props:{[key:string]:any})=>{
+                        updateCanvas(props,options._id);
+                    },
+                    clear:()=>{
+                        clearCanvas(options._id);
+                    },
+                    init:()=>{
+                        //console.log('Posting init')
+                        initCanvas(options._id);
+                    },
+                    stop:()=>{
+                        stopAnim(options._id);
+                    },
+                    start:()=>{
+                        startAnim(options._id);
+                    },
+                    set:(newDrawProps:CanvasProps)=>{
+                        setDraw(newDrawProps,options._id);
+                    },
+                    terminate:()=>{
+                        if(canvascontrols.proxy) {
+                            canvascontrols.proxy.terminate();
+                        }
+                        if(this.__node?.graph) this.__node.graph.remove(options._id);
+                        else {
+                            stopAnim(options._id); 
+                            if(this?.__node?.graph) delete this.__node.graph.CANVASES[canvasOptions._id];
+                            else delete globalThis.CANVASES[canvasOptions._id];
+                        }
+                    }
                 }
+
+                return canvascontrols as CanvasControls;
             }
         }
 
-        return canvascontrols as CanvasControls;
+        if(typeof canvasOptions.init === 'function') {
+            let res = (canvasOptions.init as any)(canvasOptions, canvasOptions.canvas,canvasOptions.context);
+            if(res?.then) {
+                return new Promise((resolve) => {
+                    res.then(()=>{
+                        resolve(finishSetup())
+                    });
+                });
+            } else return finishSetup();
+        } else finishSetup();
+
     }
 }
 
@@ -543,3 +562,6 @@ function parseFunctionFromText(method='') {
     return newFunc;
 
 }
+
+
+

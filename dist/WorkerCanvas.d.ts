@@ -56,10 +56,10 @@ export type WorkerCanvas = {
 export declare function Renderer(options: CanvasProps & {
     worker?: Worker | string | Blob | MessagePort | true;
     route?: string;
-}): string | CanvasControls;
+}): string | CanvasControls | Promise<unknown>;
 export declare function transferCanvas(worker: Worker | MessagePort, options: WorkerCanvasTransferProps, route?: string): WorkerCanvasControls;
 export declare function setDraw(settings: CanvasProps, _id?: string): string;
-export declare function setupCanvas(options: CanvasProps): string | CanvasControls;
+export declare function setupCanvas(options: CanvasProps): string | CanvasControls | Promise<unknown>;
 export declare function drawFrame(props?: {
     [key: string]: any;
 }, _id?: string): string;
